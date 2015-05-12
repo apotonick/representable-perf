@@ -82,7 +82,7 @@ def foos_to_array(foos)
   foos.each do |foo|
     a << foo_to_hash(foo)
   end
-  []
+  a
 end
 
 def foos_to_json(foos)
