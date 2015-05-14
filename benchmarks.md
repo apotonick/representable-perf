@@ -1,5 +1,6 @@
 # Representable 2.1.8
 
+```
 Total: 3.266443
 Sort by: self_time
 
@@ -75,7 +76,7 @@ Sort by: self_time
   0.20      0.006     0.006     0.000     0.000    20001   Hash#merge!
   0.17      0.006     0.006     0.000     0.000    20000   Representable::Hash::Binding#serialize_method
   0.15      0.005     0.005     0.000     0.000    20001   Hash#[]
-
+```
 
 # Representable 2.2, no Cached
 
@@ -152,4 +153,57 @@ Sort by: self_time
   0.21      0.004     0.004     0.000     0.000    20001   Kernel#class
   0.18      0.003     0.003     0.000     0.000    20001   Hash#[]
   0.02      0.001     0.000     0.000     0.001        6  *Kernel#require
+```
+
+# Representable 2.2, using Cached
+
+This caches the mapper, which caches the bindings (so far, all stateless). The binding then caches the representer instance when it's nested. This caches the mapper, again, and so on.
+
+```
+Total: 1.245541
+Sort by: self_time
+
+ %self      total      self      wait     child     calls  name
+  8.93      0.195     0.111     0.000     0.083   310045   Representable::Binding#[]
+  6.69      0.083     0.083     0.000     0.000   310082   Representable::Definition#[]
+  2.64      0.113     0.033     0.000     0.080    50007   Uber::Options::Value#evaluate
+  2.47      0.145     0.031     0.000     0.114    40001   Representable::Deserializer#prepare!
+  2.19      0.044     0.027     0.000     0.016    20001   Representable#representation_wrap
+  2.13      0.027     0.027     0.000     0.000   180007   Kernel#block_given?
+  2.07      0.069     0.026     0.000     0.043    30002   Uber::Options::Value#evaluate_for
+  1.82      0.031     0.023     0.000     0.009    30002   Representable::Hash::Binding#write
+  1.72      0.029     0.021     0.000     0.008    60002   Representable::Binding#skipable_empty_value?
+  1.70      0.055     0.021     0.000     0.033    30007   Representable::Binding#update!
+  1.65      0.228     0.021     0.000     0.207    40001   Representable::Deserializer#prepare
+  1.64      0.034     0.020     0.000     0.013    30003   Hash#merge
+  1.46      0.105     0.018     0.000     0.087    40001   Representable::Binding#representer_module_for
+  1.24      0.186     0.015     0.000     0.171    30002   Representable::Binding#render_filter
+  1.21      0.577     0.015     0.000     0.562    30001  *Representable::Serializer#serialize
+  1.21      0.079     0.015     0.000     0.064    30002   Representable::Binding#get
+  1.16      0.030     0.014     0.000     0.015    30002   Representable::Binding#default_for
+  1.15      0.023     0.014     0.000     0.009    30002   Representable::Mapper::Methods#skip_property?
+  1.13      0.043     0.014     0.000     0.029    30002   Uber::Options::Value#callable!
+  1.04      0.033     0.013     0.000     0.021    30007   Representable::Binding#setup_exec_context!
+  1.03      0.018     0.013     0.000     0.005    30002   Enumerable#inject
+  0.97      0.012     0.012     0.000     0.000    40001   Representable::Binding#representable?
+  0.93      0.012     0.012     0.000     0.000    90006   Kernel#nil?
+  0.92      0.011     0.011     0.000     0.000    50007   Uber::Options::Value#dynamic?
+  0.86      0.029     0.011     0.000     0.018    30002   Representable::Pipeline#call
+  0.81      1.212     0.010     0.000     1.201    40001  *Representable::Serializer#serialize!
+  0.76      0.010     0.009     0.000     0.000    30002   Representable::Cached::Binding#serializer
+  0.75      0.009     0.009     0.000     0.000    30002   Representable::Binding#getter
+  0.73      0.009     0.009     0.000     0.000    30002   Representable::Binding#skip_filters?
+  0.70      0.009     0.009     0.000     0.000    20000   Representable::Cached::Serializer#prepare_for
+  0.70      0.009     0.009     0.000     0.000    30002   Representable::Binding#as
+  0.65      0.077     0.008     0.000     0.069    20004   Representable::Mapper::Methods#bindings
+  0.63      0.013     0.008     0.000     0.005    30003   Kernel#initialize_dup
+  0.57      0.010     0.007     0.000     0.003    20001   Representable::Config#wrap_for
+  0.55      0.007     0.007     0.000     0.000        1   <Module::Oj>#dump
+  0.51      0.007     0.006     0.000     0.000    20001   Representable::Cached#representable_mapper
+  0.49      1.112     0.006     0.000     1.105    20000  *Representable::Serializer#marshal
+  0.49      0.006     0.006     0.000     0.000    20004   Representable#representable_attrs
+  0.42      0.005     0.005     0.000     0.000    30003   Hash#initialize_copy
+  0.39      0.005     0.005     0.000     0.000    20000   Representable::Hash::Binding#serialize_method
+  0.26      0.003     0.003     0.000     0.000    20001   Hash#[]
+  0.08      0.003     0.001     0.000     0.002        6  *Kernel#require
 ```
