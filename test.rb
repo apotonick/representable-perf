@@ -3,8 +3,6 @@ require 'rubygems'
 require 'bundler/setup'
 require 'representable/json'
 require 'representable/decorator'
-require 'roar/json'
-require 'roar/decorator'
 require 'ruby-prof'
 require 'benchmark'
 require 'oj'
@@ -21,41 +19,33 @@ module Representables
 
   class BarRepresentation < Representable::Decorator
     include Representable::JSON
+    # include Representable::Cached
     property :value
   end
 
   class FooRepresentation < Representable::Decorator
     include Representable::JSON
+    # include Representable::Cached
     property :value
     property :bar, :decorator => BarRepresentation
   end
 
   class FoosRepresentation < Representable::Decorator
     include Representable::JSON
+    # feature Representable::Cached
     property :count
-    collection :foos, :class => Foo, :decorator => FooRepresentation
+    # collection :foos, :class => Foo, :decorator => FooRepresentation
+    collection :foos do
+      property :value
+
+      property :bar do
+        property :value
+      end
+    end
   end
 
 end
 
-module Roars
-  class BarRepresentation < Roar::Decorator
-    include Roar::JSON
-    property :value
-  end
-
-  class FooRepresentation < Roar::Decorator
-    include Roar::JSON
-    property :value
-    property :bar, :decorator => BarRepresentation
-  end
-
-  class FoosRepresentation < Roar::Decorator
-    include Roar::JSON
-    property :count
-    collection :foos, :class => Foo, :decorator => FooRepresentation
-  end
-end
 
 TESTMETHODS = ['bench', 'profile']
 
@@ -102,28 +92,28 @@ foos = []
   foos << foo
 end
 
-if testmethod == 'bench'
-  Benchmark.bm do |x|
-  x.report("roar") {
-    fs = FoosStruct.new(foos.count, foos)
-    json = Roars::FoosRepresentation.new(fs).to_json
-  }
-  x.report("representable") {
-    fs = FoosStruct.new(foos.count, foos)
-    json = Representables::FoosRepresentation.new(fs).to_json
-  }
-  x.report("by hand") {
-    foos_to_json(foos)
-  }
-  end
-else
-  RubyProf.start
-    fs = FoosStruct.new(foos.count, foos)
-    json = Roars::FoosRepresentation.new(fs).to_json
-  res = RubyProf.stop
-  printer = RubyProf::FlatPrinter.new(res)
-  puts "roar:"
-  printer.print(STDOUT)
+# if testmethod == 'bench'
+#   Benchmark.bm do |x|
+#   x.report("roar") {
+#     fs = FoosStruct.new(foos.count, foos)
+#     json = Roars::FoosRepresentation.new(fs).to_json
+#   }
+#   x.report("representable") {
+#     fs = FoosStruct.new(foos.count, foos)
+#     json = Representables::FoosRepresentation.new(fs).to_json
+#   }
+#   x.report("by hand") {
+#     foos_to_json(foos)
+#   }
+#   end
+# else
+  # RubyProf.start
+  #   fs = FoosStruct.new(foos.count, foos)
+  #   json = Roars::FoosRepresentation.new(fs).to_json
+  # res = RubyProf.stop
+  # printer = RubyProf::FlatPrinter.new(res)
+  # puts "roar:"
+  # printer.print(STDOUT)
   RubyProf.start
     fs = FoosStruct.new(foos.count, foos)
     json = Representables::FoosRepresentation.new(fs).to_json
@@ -131,10 +121,10 @@ else
   printer = RubyProf::FlatPrinter.new(res)
   puts "representable:"
   printer.print(STDOUT)
-  RubyProf.start
-    foos_to_json(foos)
-  res = RubyProf.stop
-  printer = RubyProf::FlatPrinter.new(res)
-  puts "by hand:"
-  printer.print(STDOUT)
-end
+  # RubyProf.start
+  #   foos_to_json(foos)
+  # res = RubyProf.stop
+  # printer = RubyProf::FlatPrinter.new(res)
+  # puts "by hand:"
+  # printer.print(STDOUT)
+# end
