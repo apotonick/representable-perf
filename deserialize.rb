@@ -16,29 +16,15 @@ class Bar
 end
 
 module Representables
-
-  class BarRepresentation < Representable::Decorator
-    include Representable::JSON
-    include Representable::Cached
-    property :value
-  end
-
-  class FooRepresentation < Representable::Decorator
-    include Representable::JSON
-    include Representable::Cached
-    property :value
-    property :bar, :decorator => BarRepresentation
-  end
-
   class FoosRepresentation < Representable::Decorator
     include Representable::JSON
     feature Representable::Cached
     property :count
-    # collection :foos, :class => Foo, :decorator => FooRepresentation
-    collection :foos do
+
+    collection :foos, class: Foo do
       property :value
 
-      property :bar do
+      property :bar, class: Bar do
         property :value
       end
     end
@@ -114,9 +100,13 @@ end
   # printer = RubyProf::FlatPrinter.new(res)
   # puts "roar:"
   # printer.print(STDOUT)
+  fs = FoosStruct.new(foos.count, foos)
+  hash = Representables::FoosRepresentation.new(fs).to_hash
+
   RubyProf.start
-    fs = FoosStruct.new(foos.count, foos)
-    json = Representables::FoosRepresentation.new(fs).to_json
+    foos = FoosStruct.new
+    Representables::FoosRepresentation.new(foos).from_hash(hash)
+
   res = RubyProf.stop
   printer = RubyProf::FlatPrinter.new(res)
   puts "representable:"
